@@ -1,0 +1,23 @@
+{
+  "name": "hospyar-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hospyar Sovereign AI Copilot - Enterprise Patient & Member 360 for GCC Healthcare Governance",
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "clean": "turbo run clean && rm -rf node_modules",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json,py}\""
+  },
+  "devDependencies": {
+    "turbo": "^2.4.4",
+    "prettier": "^3.5.0",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "name": "@hospyar/typescript-config",
+  "version": "1.0.0",
+  "private": true,
+  "files": ["base.json", "react-library.json", "nextjs.json"],
+  "license": "UNLICENSED"
+}

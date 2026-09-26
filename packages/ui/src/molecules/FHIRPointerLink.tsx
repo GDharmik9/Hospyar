@@ -18,11 +18,11 @@ export const FHIRPointerLink: React.FC<FHIRPointerLinkProps> = ({
       type="button"
       onClick={onClick}
       className={cn(
-        'inline-flex items-center gap-1 font-mono text-[11px] text-teal-400 hover:text-teal-300 hover:underline transition-colors cursor-pointer bg-slate-950/70 px-2 py-0.5 rounded border border-teal-900/40',
+        'inline-flex items-center gap-1 font-mono text-[11px] text-[#4F7C82] hover:text-[#0B2E33] hover:underline transition-colors cursor-pointer bg-[#B8E3E9]/30 px-2 py-0.5 rounded border border-[#93B1B5]',
         className
       )}
     >
-      <Hash className="w-2.5 h-2.5 text-teal-500" />
+      <Hash className="w-2.5 h-2.5 text-[#4F7C82]" />
       <span>{pointer}</span>
       <ExternalLink className="w-2.5 h-2.5 opacity-60 ml-0.5" />
     </button>

@@ -3,44 +3,53 @@
 @tailwind utilities;
 
 :root {
-  color-scheme: dark;
+  color-scheme: light;
+  --hospyar-base: #FFFFFF;
+  --hospyar-brand: #0B2E33;
+  --hospyar-action: #4F7C82;
+  --hospyar-accent: #6B8B99;
+  --hospyar-border: #93B1B5;
+  --hospyar-soft: #B8E3E9;
 }
 
 body {
   margin: 0;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background-color: #020617;
-  color: #f8fafc;
+  background-color: #F8FCFD;
+  color: #0B2E33;
 }
 
 [dir="rtl"] body, [dir="rtl"] * {
   font-family: 'Noto Sans Arabic', 'Inter', sans-serif;
 }
 
-/* Custom scrollbars */
+/* Custom scrollbars with Hospyar palette */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #090d16;
+  background: #F0F7F8;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: #93B1B5;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #6B8B99;
 }
 
-/* Glassmorphism helpers */
-.glass-panel {
-  background: rgba(15, 23, 42, 0.75);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border: 1px solid rgba(51, 65, 85, 0.6);
+/* Clinical card & surface styling */
+.clinical-card {
+  background-color: #FFFFFF;
+  border: 1px solid #93B1B5;
+  box-shadow: 0 1px 3px 0 rgba(11, 46, 51, 0.05), 0 1px 2px -1px rgba(11, 46, 51, 0.05);
 }
 
-.clinical-gradient {
-  background: linear-gradient(135deg, #059669 0%, #0d9488 50%, #0284c7 100%);
+.clinical-card-hover {
+  transition: all 0.2s ease-in-out;
+}
+.clinical-card-hover:hover {
+  border-color: #4F7C82;
+  box-shadow: 0 4px 6px -1px rgba(11, 46, 51, 0.08), 0 2px 4px -2px rgba(11, 46, 51, 0.08);
 }

@@ -7,7 +7,6 @@ import {
   Clock,
   Receipt,
   Network,
-  ShieldCheck,
   Server
 } from 'lucide-react';
 
@@ -60,33 +59,37 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 flex flex-col font-sans">
-      {/* Top Sovereign Header Bar */}
-      <header className="border-b border-slate-800/80 bg-slate-900/80 backdrop-blur-md sticky top-0 z-40">
+    <div className="min-h-screen bg-[#F8FCFD] text-[#0B2E33] flex flex-col font-sans">
+      {/* Top Sovereign Header Bar in Deep Teal Navy (#0B2E33) */}
+      <header className="border-b border-[#061D20] bg-[#0B2E33] text-white shadow-md sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-          {/* Logo & Brand */}
+          {/* Logo & Brand with official icon */}
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-600 via-teal-500 to-cyan-500 flex items-center justify-center text-white shadow-md shadow-emerald-950/40">
-              <ShieldCheck className="w-6 h-6" />
+            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center p-1 shadow-sm overflow-hidden shrink-0">
+              <img
+                src="/images/4.png"
+                alt="Hospyar Logo"
+                className="w-full h-full object-contain"
+              />
             </div>
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-lg font-bold text-white tracking-tight">
                   HOSPYAR
                 </span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-950/80 text-emerald-300 border border-emerald-800/50">
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-[#4F7C82]/40 text-[#B8E3E9] border border-[#6B8B99]/40 font-semibold">
                   SOVEREIGN AI
                 </span>
               </div>
-              <p className="text-[10px] text-slate-400">
+              <p className="text-[10px] text-[#B8E3E9]/80 font-medium">
                 GCC Patient & Member 360 • UAE & KSA PDPL
               </p>
             </div>
           </div>
 
           {/* Center: In-Country Sovereign Boundary Indicator */}
-          <div className="hidden md:flex items-center gap-2 bg-slate-950/80 border border-slate-800 px-3 py-1.5 rounded-lg text-xs font-mono text-slate-300">
-            <Server className="w-3.5 h-3.5 text-emerald-400" />
+          <div className="hidden md:flex items-center gap-2 bg-[#061D20]/90 border border-[#4F7C82]/50 px-3 py-1.5 rounded-lg text-xs font-mono text-[#B8E3E9]">
+            <Server className="w-3.5 h-3.5 text-[#B8E3E9]" />
             <span>Zone: UAE-CENTRAL-1 (Zero Cross-Border Egress)</span>
           </div>
 
@@ -100,7 +103,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
         </div>
 
         {/* Tab Navigation Navigation */}
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-slate-800/40 flex items-center gap-1 overflow-x-auto">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-[#4F7C82]/30 flex items-center gap-1 overflow-x-auto">
           {navItems.map((item) => {
             const isActive = activeTab === item.id;
             return (
@@ -110,8 +113,8 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
                 onClick={() => onTabChange(item.id as NavigationTab)}
                 className={`flex items-center gap-2 px-4 py-3 text-xs font-semibold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
                   isActive
-                    ? 'border-emerald-500 text-emerald-400 bg-emerald-950/20'
-                    : 'border-transparent text-slate-400 hover:text-slate-200 hover:bg-slate-900/40'
+                    ? 'border-[#B8E3E9] text-white bg-[#4F7C82]/40'
+                    : 'border-transparent text-[#93B1B5] hover:text-white hover:bg-[#4F7C82]/20'
                 }`}
               >
                 {item.icon}
@@ -122,13 +125,13 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
         </div>
       </header>
 
-      {/* Main Content Area */}
+      {/* Main Content Area in Clean Clinical Canvas */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {children}
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800/60 bg-slate-950/90 py-4 text-center text-xs text-slate-500 font-mono">
+      <footer className="border-t border-[#93B1B5]/30 bg-white py-4 text-center text-xs text-[#6B8B99] font-mono">
         Hospyar Sovereign AI Copilot • Built for GCC Health Information Systems (NPHIES, Malaffi, NABIDH, Riayati) • 100% Deterministic Citation Verification
       </footer>
     </div>

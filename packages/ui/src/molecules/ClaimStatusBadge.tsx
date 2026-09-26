@@ -12,34 +12,34 @@ export const ClaimStatusBadge: React.FC<ClaimStatusBadgeProps> = ({ status, clas
   const statusConfig = {
     AUTHORIZED: {
       label: 'Authorized (Compliant)',
-      icon: <CheckCircle2 className="w-3.5 h-3.5" />,
-      color: 'bg-emerald-950/80 text-emerald-300 border-emerald-700/60'
+      icon: <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />,
+      color: 'bg-emerald-50 text-emerald-800 border-emerald-300'
     },
     PENDING_REVIEW: {
       label: 'Pending Clinical Review',
-      icon: <Clock className="w-3.5 h-3.5" />,
-      color: 'bg-amber-950/80 text-amber-300 border-amber-700/60'
+      icon: <Clock className="w-3.5 h-3.5 text-amber-600" />,
+      color: 'bg-amber-50 text-amber-800 border-amber-300'
     },
     REJECTED_DISCREPANCY: {
       label: 'Rejected - Discrepancy',
-      icon: <XCircle className="w-3.5 h-3.5" />,
-      color: 'bg-rose-950/80 text-rose-300 border-rose-700/60'
+      icon: <XCircle className="w-3.5 h-3.5 text-rose-600" />,
+      color: 'bg-rose-50 text-rose-800 border-rose-300'
     },
     MISSING_EVIDENCE: {
       label: 'Missing Narrative Anchor',
-      icon: <AlertTriangle className="w-3.5 h-3.5" />,
-      color: 'bg-orange-950/80 text-orange-300 border-orange-700/60'
+      icon: <AlertTriangle className="w-3.5 h-3.5 text-[#4F7C82]" />,
+      color: 'bg-[#B8E3E9] text-[#0B2E33] border-[#4F7C82]'
     }
   }[status] || {
     label: status,
     icon: null,
-    color: 'bg-slate-800 text-slate-300 border-slate-700'
+    color: 'bg-[#F8FCFD] text-[#0B2E33] border-[#93B1B5]'
   };
 
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border shadow-xs',
+        'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border shadow-2xs',
         statusConfig.color,
         className
       )}

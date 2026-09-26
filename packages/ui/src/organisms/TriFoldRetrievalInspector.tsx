@@ -18,38 +18,38 @@ export const TriFoldRetrievalInspector: React.FC<TriFoldRetrievalInspectorProps>
     {
       id: 'VectorRAG',
       title: 'VectorRAG: Note Semantic Chunks',
-      icon: <Binary className="w-4 h-4 text-indigo-400" />,
-      color: 'border-indigo-500/30 bg-indigo-950/20'
+      icon: <Binary className="w-4 h-4 text-[#4F7C82]" />,
+      color: 'border-[#4F7C82]/40 bg-[#EBF6F8]'
     },
     {
       id: 'GraphRAG',
       title: 'GraphRAG: SNOMED/LOINC Ontologies',
-      icon: <Network className="w-4 h-4 text-purple-400" />,
-      color: 'border-purple-500/30 bg-purple-950/20'
+      icon: <Network className="w-4 h-4 text-[#6B8B99]" />,
+      color: 'border-[#6B8B99]/40 bg-[#B8E3E9]/50'
     },
     {
       id: 'Text2SQL',
       title: 'Text2SQL: Exact Relational Math',
-      icon: <Database className="w-4 h-4 text-emerald-400" />,
-      color: 'border-emerald-500/30 bg-emerald-950/20'
+      icon: <Database className="w-4 h-4 text-[#4F7C82]" />,
+      color: 'border-[#93B1B5] bg-white'
     }
   ];
 
   return (
     <div
       className={cn(
-        'bg-slate-900 border border-slate-800 rounded-2xl p-5 shadow-xl space-y-4',
+        'bg-white border border-[#93B1B5] rounded-2xl p-5 shadow-sm space-y-4',
         className
       )}
     >
-      <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+      <div className="flex items-center justify-between pb-3 border-b border-[#93B1B5]/30">
         <div className="flex items-center gap-2">
-          <ShieldCheck className="w-4 h-4 text-emerald-400" />
-          <h3 className="text-sm font-semibold text-white">
+          <ShieldCheck className="w-4 h-4 text-[#4F7C82]" />
+          <h3 className="text-sm font-semibold text-[#0B2E33]">
             Tri-Fold Deterministic Retrieval Inspector
           </h3>
         </div>
-        <span className="text-[11px] font-mono text-slate-400">
+        <span className="text-[11px] font-mono text-[#6B8B99]">
           Total Evidence Items: {evidenceItems.length}
         </span>
       </div>
@@ -66,13 +66,13 @@ export const TriFoldRetrievalInspector: React.FC<TriFoldRetrievalInspectorProps>
               )}
             >
               <div>
-                <div className="flex items-center gap-2 mb-2 font-medium text-xs text-slate-200">
+                <div className="flex items-center gap-2 mb-2 font-semibold text-xs text-[#0B2E33]">
                   {rt.icon}
                   <span>{rt.title}</span>
                 </div>
 
                 {matched.length === 0 ? (
-                  <p className="text-[11px] text-slate-500 italic py-2">
+                  <p className="text-[11px] text-[#6B8B99] italic py-2">
                     No active tokens routed to this pipeline for the current prompt.
                   </p>
                 ) : (
@@ -91,18 +91,18 @@ export const TriFoldRetrievalInspector: React.FC<TriFoldRetrievalInspectorProps>
                             });
                           }
                         }}
-                        className="bg-slate-950/80 hover:bg-slate-950 p-2.5 rounded-lg border border-slate-800 hover:border-slate-700 text-[11px] text-slate-300 space-y-1 cursor-pointer transition-colors"
+                        className="bg-white hover:bg-[#F8FCFD] p-2.5 rounded-lg border border-[#93B1B5] hover:border-[#4F7C82] text-[11px] text-[#0B2E33] space-y-1 cursor-pointer transition-colors shadow-2xs"
                       >
-                        <div className="flex items-center justify-between text-[10px] font-mono text-emerald-400">
+                        <div className="flex items-center justify-between text-[10px] font-mono text-[#4F7C82] font-semibold">
                           <span>[{item.id}]</span>
-                          <span className="text-slate-400">
+                          <span className="text-[#6B8B99]">
                             Score: {(item.relevance_score * 100).toFixed(0)}%
                           </span>
                         </div>
-                        <p className="line-clamp-2 text-slate-300 font-sans">
+                        <p className="line-clamp-2 text-[#0B2E33] font-sans">
                           {item.excerpt}
                         </p>
-                        <div className="text-[9px] font-mono text-slate-500 truncate">
+                        <div className="text-[9px] font-mono text-[#6B8B99] truncate">
                           Pointer: {item.reference}
                         </div>
                       </div>
@@ -111,9 +111,9 @@ export const TriFoldRetrievalInspector: React.FC<TriFoldRetrievalInspectorProps>
                 )}
               </div>
 
-              <div className="mt-3 pt-2 border-t border-slate-800/40 flex items-center justify-between text-[10px] font-mono text-slate-400">
+              <div className="mt-3 pt-2 border-t border-[#93B1B5]/30 flex items-center justify-between text-[10px] font-mono text-[#6B8B99]">
                 <span>Pass-through</span>
-                <span className="text-emerald-400 flex items-center gap-0.5">
+                <span className="text-[#4F7C82] font-semibold flex items-center gap-0.5">
                   Grounded <ArrowRight className="w-2.5 h-2.5" />
                 </span>
               </div>

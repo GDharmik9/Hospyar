@@ -2,7 +2,7 @@ import React from 'react';
 import { cn } from '../lib/utils';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'purple';
+  variant?: 'default' | 'success' | 'warning' | 'danger' | 'info' | 'purple' | 'brand';
   size?: 'sm' | 'md';
 }
 
@@ -16,12 +16,13 @@ export const Badge: React.FC<BadgeProps> = ({
   const baseStyles = 'inline-flex items-center font-medium rounded-full tracking-wide';
 
   const variantStyles = {
-    default: 'bg-slate-800 text-slate-300 border border-slate-700',
-    success: 'bg-emerald-950/80 text-emerald-300 border border-emerald-800/60',
-    warning: 'bg-amber-950/80 text-amber-300 border border-amber-800/60',
-    danger: 'bg-rose-950/80 text-rose-300 border border-rose-800/60',
-    info: 'bg-cyan-950/80 text-cyan-300 border border-cyan-800/60',
-    purple: 'bg-purple-950/80 text-purple-300 border border-purple-800/60'
+    default: 'bg-[#B8E3E9]/50 text-[#0B2E33] border border-[#93B1B5]',
+    info: 'bg-[#B8E3E9] text-[#0B2E33] border border-[#6B8B99]',
+    success: 'bg-emerald-50 text-emerald-800 border border-emerald-300',
+    warning: 'bg-amber-50 text-amber-800 border border-amber-300',
+    danger: 'bg-rose-50 text-rose-800 border border-rose-300',
+    purple: 'bg-[#EBF6F8] text-[#0B2E33] border border-[#4F7C82]',
+    brand: 'bg-[#0B2E33] text-white border border-[#0B2E33]'
   };
 
   const sizeStyles = {

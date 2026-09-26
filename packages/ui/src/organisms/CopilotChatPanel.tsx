@@ -91,34 +91,34 @@ export const CopilotChatPanel: React.FC<CopilotChatPanelProps> = ({
   return (
     <div
       className={cn(
-        'flex flex-col h-[650px] bg-slate-900 border border-slate-800 rounded-2xl shadow-xl overflow-hidden',
+        'flex flex-col h-[650px] bg-white border border-[#93B1B5] rounded-2xl shadow-sm overflow-hidden',
         className
       )}
     >
-      {/* Header bar */}
-      <div className="px-5 py-3.5 border-b border-slate-800/80 bg-slate-950/60 flex items-center justify-between">
+      {/* Header bar in Deep Teal Navy (#0B2E33) */}
+      <div className="px-5 py-3.5 border-b border-[#061D20] bg-[#0B2E33] text-white flex items-center justify-between">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+          <div className="p-2 rounded-lg bg-[#4F7C82]/30 text-[#B8E3E9] border border-[#6B8B99]/40">
             <Sparkles className="w-4 h-4" />
           </div>
           <div>
             <h3 className="text-sm font-semibold text-white">
               Tri-Fold Sovereign HybridRAG Copilot
             </h3>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-[#B8E3E9]">
               Zero-Egress Snowflake Cortex AI • Verbatim Citation Anchors
             </p>
           </div>
         </div>
 
-        <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-emerald-400 bg-emerald-950/40 px-2.5 py-1 rounded-md border border-emerald-800/40">
-          <Cpu className="w-3 h-3" />
+        <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-[#B8E3E9] bg-[#061D20] px-2.5 py-1 rounded-md border border-[#4F7C82]/40">
+          <Cpu className="w-3 h-3 text-[#B8E3E9]" />
           <span>LLaMA-3-70B Governed</span>
         </div>
       </div>
 
       {/* Messages area */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-4">
+      <div className="flex-1 overflow-y-auto p-5 space-y-4 bg-[#F8FCFD]">
         {messages.map((msg) => (
           <div key={msg.id} className="space-y-1.5">
             <ChatMessageBubble
@@ -132,10 +132,10 @@ export const CopilotChatPanel: React.FC<CopilotChatPanelProps> = ({
             />
 
             {msg.routes && msg.routes.length > 0 && (
-              <div className="flex items-center gap-3 text-[11px] text-slate-500 pl-11">
+              <div className="flex items-center gap-3 text-[11px] text-[#6B8B99] pl-11">
                 <RouteBadgeGroup routes={msg.routes} />
                 {msg.executionTimeMs && (
-                  <span className="font-mono text-[10px] text-slate-400">
+                  <span className="font-mono text-[10px] text-[#6B8B99]">
                     ⏱️ {msg.executionTimeMs} ms
                   </span>
                 )}
@@ -145,7 +145,7 @@ export const CopilotChatPanel: React.FC<CopilotChatPanelProps> = ({
         ))}
 
         {isLoading && (
-          <div className="flex items-center gap-3 pl-11 py-2 text-xs text-slate-400 font-mono">
+          <div className="flex items-center gap-3 pl-11 py-2 text-xs text-[#4F7C82] font-mono">
             <Spinner size="sm" />
             <span>Traversing VectorRAG, GraphRAG & Text2SQL routes...</span>
           </div>
@@ -153,8 +153,8 @@ export const CopilotChatPanel: React.FC<CopilotChatPanelProps> = ({
       </div>
 
       {/* Suggested quick queries */}
-      <div className="px-5 py-2 bg-slate-950/40 border-t border-slate-800/40 flex items-center gap-2 overflow-x-auto text-xs">
-        <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider shrink-0">
+      <div className="px-5 py-2.5 bg-white border-t border-[#93B1B5]/30 flex items-center gap-2 overflow-x-auto text-xs">
+        <span className="text-[10px] uppercase font-bold text-[#6B8B99] tracking-wider shrink-0">
           Suggested:
         </span>
         {sampleQueries.map((q, idx) => (
@@ -162,7 +162,7 @@ export const CopilotChatPanel: React.FC<CopilotChatPanelProps> = ({
             key={idx}
             type="button"
             onClick={() => setInput(q)}
-            className="text-[11px] text-slate-400 hover:text-emerald-300 hover:bg-slate-800/60 px-2.5 py-1 rounded-md border border-slate-800 transition-colors whitespace-nowrap cursor-pointer"
+            className="text-[11px] text-[#0B2E33] hover:text-white hover:bg-[#4F7C82] hover:border-[#4F7C82] px-2.5 py-1 rounded-md border border-[#93B1B5] transition-colors whitespace-nowrap cursor-pointer"
           >
             {q}
           </button>
@@ -172,7 +172,7 @@ export const CopilotChatPanel: React.FC<CopilotChatPanelProps> = ({
       {/* Input form */}
       <form
         onSubmit={handleSubmit}
-        className="p-4 bg-slate-950/80 border-t border-slate-800 flex items-center gap-2.5"
+        className="p-4 bg-white border-t border-[#93B1B5] flex items-center gap-2.5"
       >
         <input
           type="text"
@@ -183,11 +183,11 @@ export const CopilotChatPanel: React.FC<CopilotChatPanelProps> = ({
               ? 'اطرح سؤالاً سريرياً مع التحقق السيادي من المصادر...'
               : 'Ask a clinical question with zero-hallucination source verification...'
           }
-          className="flex-1 bg-slate-900 border border-slate-700/80 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all"
+          className="flex-1 bg-[#F8FCFD] border border-[#93B1B5] rounded-xl px-4 py-2.5 text-sm text-[#0B2E33] placeholder:text-[#6B8B99] focus:outline-none focus:ring-2 focus:ring-[#4F7C82] focus:border-[#4F7C82] transition-all"
         />
         <Button
           type="submit"
-          variant="clinical"
+          variant="primary"
           disabled={!input.trim() || isLoading}
           className="px-4 py-2.5 rounded-xl shrink-0"
         >

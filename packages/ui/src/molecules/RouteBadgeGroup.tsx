@@ -12,18 +12,18 @@ export const RouteBadgeGroup: React.FC<RouteBadgeGroupProps> = ({ routes, classN
   const routeConfig: Record<RetrievalRoute, { label: string; icon: React.ReactNode; color: string }> = {
     VectorRAG: {
       label: 'VectorRAG (Semantic)',
-      icon: <Binary className="w-3 h-3" />,
-      color: 'bg-indigo-950/70 text-indigo-300 border-indigo-800/60'
+      icon: <Binary className="w-3 h-3 text-[#4F7C82]" />,
+      color: 'bg-[#EBF6F8] text-[#0B2E33] border-[#4F7C82]/60'
     },
     GraphRAG: {
       label: 'GraphRAG (SNOMED/LOINC)',
-      icon: <Network className="w-3 h-3" />,
-      color: 'bg-purple-950/70 text-purple-300 border-purple-800/60'
+      icon: <Network className="w-3 h-3 text-[#6B8B99]" />,
+      color: 'bg-[#B8E3E9] text-[#0B2E33] border-[#6B8B99]'
     },
     Text2SQL: {
       label: 'Text2SQL (Exact Math)',
-      icon: <Database className="w-3 h-3" />,
-      color: 'bg-emerald-950/70 text-emerald-300 border-emerald-800/60'
+      icon: <Database className="w-3 h-3 text-[#4F7C82]" />,
+      color: 'bg-white text-[#4F7C82] border-[#93B1B5] font-semibold'
     }
   };
 
@@ -36,7 +36,7 @@ export const RouteBadgeGroup: React.FC<RouteBadgeGroupProps> = ({ routes, classN
           <span
             key={route}
             className={cn(
-              'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-medium border shadow-xs',
+              'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-medium border shadow-2xs',
               conf.color
             )}
           >

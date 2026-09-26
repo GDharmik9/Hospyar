@@ -71,19 +71,19 @@ export const ChatMessageBubble: React.FC<ChatMessageBubbleProps> = ({
         className={cn(
           'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5',
           sender === 'ai'
-            ? 'bg-gradient-to-br from-emerald-600 to-teal-700 text-white shadow-md shadow-emerald-950/40'
-            : 'bg-slate-800 text-slate-300 border border-slate-700'
+            ? 'bg-[#0B2E33] text-white shadow-xs'
+            : 'bg-[#4F7C82] text-white shadow-xs'
         )}
       >
-        {sender === 'ai' ? <Sparkles className="w-4 h-4 text-emerald-200" /> : <User className="w-4 h-4" />}
+        {sender === 'ai' ? <Sparkles className="w-4 h-4 text-[#B8E3E9]" /> : <User className="w-4 h-4" />}
       </div>
 
       <div
         className={cn(
           'rounded-2xl px-4 py-3 text-sm leading-relaxed border transition-all',
           sender === 'ai'
-            ? 'bg-slate-900/95 text-slate-100 border-slate-800 shadow-sm'
-            : 'bg-emerald-900/40 text-emerald-100 border-emerald-700/50'
+            ? 'bg-white text-[#0B2E33] border-[#93B1B5] shadow-xs'
+            : 'bg-[#B8E3E9]/50 text-[#0B2E33] border-[#4F7C82]/60 shadow-xs'
         )}
       >
         <div className="font-sans whitespace-pre-wrap">

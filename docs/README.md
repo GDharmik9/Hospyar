@@ -22,7 +22,8 @@ docs/
 ├── api/                   # API Specifications & Contracts
 │   └── README.md                                # FastAPI endpoints, OpenAPI contracts, and DTO schemas
 └── runbooks/              # Developer & Ops Runbooks
-    └── local_setup.md                           # Local environment bootstrapping, testing, & debugging
+    ├── local_setup.md                           # Local environment bootstrapping, testing, & debugging
+    └── branch_protection.md                     # GitHub Branch Protection, Husky gates & Checksum guide
 ```
 
 ---

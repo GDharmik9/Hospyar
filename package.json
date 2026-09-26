@@ -2,20 +2,40 @@
   "name": "hospyar-monorepo",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "description": "Hospyar Sovereign AI Copilot - Enterprise Patient & Member 360 for GCC Healthcare Governance",
   "packageManager": "pnpm@9.15.0",
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
-    "lint": "turbo run lint",
+    "lint": "eslint apps/web/src packages/ui/src --max-warnings 0 && turbo run lint",
+    "lint:fix": "eslint apps/web/src packages/ui/src --fix",
     "test": "turbo run test",
+    "checksum:generate": "node scripts/generate-checksums.mjs",
+    "checksum:verify": "node scripts/verify-checksums.mjs",
+    "prepare": "husky",
     "clean": "turbo run clean && rm -rf node_modules",
     "format": "prettier --write \"**/*.{ts,tsx,md,json,py}\""
   },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
   "devDependencies": {
-    "turbo": "^2.4.4",
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.11.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.0",
     "prettier": "^3.5.0",
-    "typescript": "^5.7.3"
+    "turbo": "^2.4.4",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.70.1"
   },
   "engines": {
     "node": ">=20.0.0"

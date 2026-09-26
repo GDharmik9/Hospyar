@@ -1,0 +1,46 @@
+#!/bin/sh
+# Hospyar Pre-Push Sovereign Gate & Checksum Validation Hook
+
+echo ""
+echo "=========================================================="
+echo "🛡️  HOSPYAR PRE-PUSH SOVEREIGN GATE VERIFICATION"
+echo "=========================================================="
+echo ""
+
+# 1. Verify Checksum Integrity
+echo "🔍 [1/4] Verifying monorepo & sovereign payload checksums..."
+node scripts/verify-checksums.mjs
+if [ $? -ne 0 ]; then
+  echo "❌ Checksum verification failed! Please run 'pnpm run checksum:generate' if intentional."
+  exit 1
+fi
+
+# 2. Run Linting (ESLint)
+echo "🧹 [2/4] Running ESLint across workspaces..."
+pnpm run lint
+if [ $? -ne 0 ]; then
+  echo "❌ ESLint failed! Fix linting errors before pushing."
+  exit 1
+fi
+
+# 3. Run Automated Tests (Pytest)
+echo "🧪 [3/4] Running automated test suites..."
+pnpm run test
+if [ $? -ne 0 ]; then
+  echo "❌ Automated tests failed! Fix test failures before pushing."
+  exit 1
+fi
+
+# 4. Run Monorepo Build (Turborepo)
+echo "📦 [4/4] Validating Turborepo monorepo build..."
+pnpm run build
+if [ $? -ne 0 ]; then
+  echo "❌ Build verification failed! Fix build issues before pushing."
+  exit 1
+fi
+
+echo ""
+echo "✅ All Hospyar Pre-Push Sovereign Gate checks passed successfully!"
+echo "=========================================================="
+echo ""
+exit 0

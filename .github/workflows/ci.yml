@@ -1,47 +1,102 @@
-name: Hospyar Monorepo CI
+name: Hospyar Sovereign CI & Branch Protection Gate
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main]
   pull_request:
-    branches: [main, develop]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  validate:
-    name: Build, Lint & Test
+  checksum-and-lint:
+    name: Checksum Verification & ESLint
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js & pnpm
+      - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
           version: 9.15.0
 
-      - name: Use Node.js 20.x
+      - name: Setup Node.js 20.x
         uses: actions/setup-node@v4
         with:
           node-version: 20.x
-          cache: 'pnpm'
+          cache: "pnpm"
 
       - name: Setup Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
-          cache: 'pip'
+          python-version: "3.12"
+          cache: "pip"
 
-      - name: Install Monorepo Dependencies
-        run: pnpm install
+      - name: Install Workspace Dependencies (Frozen Lockfile)
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify Cryptographic SHA-256 Checksums
+        run: pnpm run checksum:verify
+
+      - name: Run ESLint Across Workspaces
+        run: pnpm run lint
+
+  test-and-build:
+    name: Automated Tests & Monorepo Build
+    runs-on: ubuntu-latest
+    needs: [checksum-and-lint]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 9.15.0
+
+      - name: Setup Node.js 20.x
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: "pnpm"
+
+      - name: Setup Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Workspace Dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Install Backend Python Dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r apps/backend/requirements.txt
+          pip install -r apps/backend/requirements.txt pytest anyio fastapi uvicorn pydantic pydantic-settings
 
-      - name: Turborepo Build
+      - name: Run Automated Test Suites (Pytest)
+        run: pnpm run test
+
+      - name: Run Turborepo Build
         run: pnpm run build
 
-      - name: Backend Test Suite (Pytest)
-        run: pnpm run test
+  branch-protection-gate:
+    name: Sovereign Branch Protection Gate
+    runs-on: ubuntu-latest
+    needs: [checksum-and-lint, test-and-build]
+    if: always()
+
+    steps:
+      - name: Check Status of All Protection Jobs
+        run: |
+          if [ "${{ needs.checksum-and-lint.result }}" != "success" ] || [ "${{ needs.test-and-build.result }}" != "success" ]; then
+            echo "❌ Branch Protection Gate Failed! One or more required checks did not succeed."
+            exit 1
+          fi
+          echo "✅ All Branch Protection Gate checks passed (Checksums, ESLint, Pytest, Build)."

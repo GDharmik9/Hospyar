@@ -125,38 +125,86 @@ hospyar/
 
 ---
 
-## 🚀 Quickstart & Commands
+## 🚀 Local Development & Operations Quickstart
 
-### 1. Install Workspace Dependencies
+### 1. Prerequisites
+
+Ensure your local machine has the following tools installed:
+
+- **Node.js**: `>= 20.0.0` (Recommended `v20.x` or `v22.x`)
+- **pnpm**: `>= 9.0.0` (Recommended `9.15.0`)
+- **Python**: `>= 3.12`
+- **Git**: `>= 2.30.0`
+
+---
+
+### 2. Setup & Installation
 
 ```bash
+# 1. Clone repository
+git clone https://github.com/GetLiveSeed/Hospyar.git
+cd Hospyar
+
+# 2. Copy environment template
+cp .env.example .env
+
+# 3. Install all monorepo dependencies & activate Husky git hooks
 pnpm install
+
+# 4. Install backend Python dependencies (virtual environment optional)
+pip install -r apps/backend/requirements.txt
 ```
 
-### 2. Build All Packages & Applications
+---
+
+### 3. Quality Gates & Checksum Verification
 
 ```bash
+# Verify cryptographic SHA-256 integrity of tracked configs & assets
+pnpm run checksum:verify
+
+# Recompute checksum manifest after approved dependency/schema changes
+pnpm run checksum:generate
+
+# Run ESLint across all workspaces (zero-warning standard)
+pnpm run lint
+
+# Auto-fix linting and formatting issues
+pnpm run lint:fix
+
+# Run automated test suites (Pytest + Clean Architecture + Checksum Tests)
+pnpm run test
+
+# Run Turborepo production build
 pnpm run build
 ```
 
-### 3. Run Automated Tests
+---
+
+### 4. Start Local Development Servers
 
 ```bash
-pnpm run test
-```
-
-### 4. Start Development Servers
-
-```bash
-# Starts both frontend (port 3000) and backend (port 8000)
+# Launches both the React 19 Web UI (port 3000) and FastAPI API (port 8000)
 pnpm run dev
 ```
 
-- **Web Application UI:** `http://localhost:3000`
-- **FastAPI Interactive Docs:** `http://localhost:8000/docs`
-- **Sovereign Health Check:** `http://localhost:8000/health`
+- 🌐 **Patient 360 Web UI:** [http://localhost:3000](http://localhost:3000)
+- 📖 **FastAPI Swagger Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
+- 🩺 **Sovereign Health Check:** [http://localhost:8000/health](http://localhost:8000/health)
 
 ---
+
+### 5. Git Commit & Push Workflow (Husky Hooks)
+
+Hospyar automatically enforces quality gates on git operations:
+
+- **`git commit`**: Triggers **pre-commit hook** running `lint-staged` (`eslint --fix` and `prettier --write`).
+- **`git push`**: Triggers **pre-push hook** enforcing the 4 Sovereign Gates (`checksum:verify`, `lint`, `test`, `build`).
+
+For advanced troubleshooting and branch protection configuration, refer to:
+
+- 📘 [Local Setup & Operations Runbook](docs/runbooks/local_setup.md)
+- 🛡️ [GitHub Branch Protection Runbook](docs/runbooks/branch_protection.md)
 
 ## 🛡️ GCC Sovereignty & Key Principles
 

@@ -1,92 +1,170 @@
 # Hospyar Sovereign AI Copilot Monorepo
 
 > **Enterprise Patient & Member 360 Platform for GCC Healthcare Governance**  
-> Grounded in **UAE PDPL (Federal Decree-Law No. 45)** and **Saudi Arabia PDPL** with zero cross-border data egress.
+> Grounded in **UAE PDPL (Federal Decree-Law No. 45)**, **Saudi Arabia PDPL**, and regional HIE standards (NPHIES, Malaffi, NABIDH, Riayati) with zero cross-border data egress.
 
 ---
 
 ## 🏛️ Monorepo Architecture Overview
 
-This monorepo is orchestrated by **Turborepo** (`turbo.json`) and **pnpm workspaces**, implementing a unified **Atomic Architecture** across both frontend applications and backend services.
+This monorepo is orchestrated by **Turborepo** (`turbo.json`) and **pnpm workspaces**, implementing **Atomic Design** across the frontend and **Clean Architecture (Hexagonal)** across the backend.
 
 ```text
 hospyar/
+├── .github/
+│   ├── workflows/
+│   │   └── ci.yml                         # CI/CD: build, lint & pytest verification
+│   └── pull_request_template.md           # PR description & GCC governance checklist
+│
+├── docs/                                  # Human & AI reference documentation
+│   ├── architecture/                      # System design diagrams, DFDs, LLD, and master spec
+│   │   └── Hospyar_Monorepo_Master_Architecture.md   # 📄 Complete details consolidated in one file
+│   ├── adr/                               # Architecture Decision Records
+│   │   └── ADR-001_Turborepo_Clean_Architecture.md
+│   ├── api/                               # OpenAPI documentation & endpoint specs
+│   │   └── README.md
+│   └── runbooks/                          # Local development setup & operations
+│       └── local_setup.md
+│
 ├── apps/
-│   ├── web/                          # Next.js / Vite React Patient 360 & Copilot App
-│   │   ├── src/
-│   │   │   ├── pages/                # Page Views (Patient360, Copilot, Timeline, Claims, HIE)
-│   │   │   ├── hooks/                # React State & Query Hooks
-│   │   │   ├── context/              # Locale Context (Bilingual RTL/LTR), Patient Context
-│   │   │   ├── services/             # Typed API Client with Fallback Resilience
-│   │   │   └── components/templates/ # Layout Shells with RTL direction management
+│   ├── backend/                           # Clean Architecture / Hexagonal FastAPI Service
+│   │   ├── app/
+│   │   │   ├── core/                      # Config, exceptions, logging, security
+│   │   │   │   ├── config.py              # Environment & Snowflake CoCo CLI settings
+│   │   │   │   ├── exceptions.py          # Domain exceptions & DLQ quarantine errors
+│   │   │   │   ├── security.py            # SHA-256 hash chains, HMAC & PII masking
+│   │   │   │   └── logging.py             # Append-only cryptographic audit logger
+│   │   │   ├── domain/                    # Entities, value objects, business rules
+│   │   │   │   ├── enums.py               # RouteEnum, UserRole, CitationPointerType, HIESystem
+│   │   │   │   └── entities.py            # PatientProfile, VitalObservation, Citation, EvidenceItem
+│   │   │   ├── services/                  # External integrations & technology adapters
+│   │   │   │   ├── vector_embedder.py     # bge-large-en 768-dim embedding generator
+│   │   │   │   ├── bm25_ranker.py         # Lexical BM25 ranker for clinical notes
+│   │   │   │   ├── graph_traverser.py     # NetworkX SNOMED CT / LOINC ontology graph
+│   │   │   │   ├── fhir_validator.py      # HL7 FHIR R4 schema parser
+│   │   │   │   ├── citation_parser.py     # Verbatim anchor parser & proof verifier
+│   │   │   │   ├── dlq_quarantine.py      # Encrypted Dead-Letter Queue
+│   │   │   │   └── snowflake_client.py    # Snowflake session pool & query executor
+│   │   │   ├── use_cases/                 # Application orchestrators & workflows
+│   │   │   │   ├── hybrid_rag_router.py   # Tri-Fold query classifier & evidence gatherer
+│   │   │   │   ├── cortex_orchestrator.py # Snowflake Cortex AI LLM synthesis
+│   │   │   │   ├── temporal_aligner.py    # Relative offset calculator (Δt = t_event - t_admission)
+│   │   │   │   └── claims_scrubber.py     # NPHIES / Malaffi prior-auth claim auditor
+│   │   │   ├── delivery/                  # HTTP delivery layer (FastAPI)
+│   │   │   │   ├── routes/                # patient360, copilot, claims, timeline, hie
+│   │   │   │   ├── dto/                   # Pydantic request / response contracts
+│   │   │   │   └── dependencies/          # auth (RBAC), db, audit, locale
+│   │   │   └── main.py                    # FastAPI application factory & CORS
+│   │   ├── tests/                         # Pytest test suite (all tests passing)
+│   │   ├── requirements.txt               # Python package dependencies
+│   │   ├── Dockerfile                     # Containerized production runtime
+│   │   └── package.json                   # Turborepo task integration
 │   │
-│   └── backend/                      # Python 3.12+ FastAPI Sovereign Backend
-│       ├── app/
-│       │   ├── atoms/                # Core Primitives: DTOs, Enums, Config, Hashers, Crypto
-│       │   ├── molecules/            # Domain Services: Embedder, BM25, Graph, FHIR, DLQ, Snowflake
-│       │   ├── organisms/            # Orchestrators: HybridRAG Router, Cortex AI, Aligner, Scrubber, Audit
-│       │   ├── pages/                # API Route Controllers (/patient360, /copilot, /claims, /timeline, /hie)
-│       │   ├── hooks/                # FastAPI Middleware & Dependencies (use_auth, use_db, use_locale, use_audit)
-│       │   └── main.py               # FastAPI App Factory & Middleware
-│       └── tests/                    # Pytest verification for Atoms, Molecules & Organisms
+│   └── web/                               # Atomic Design Frontend Client
+│       ├── src/
+│       │   ├── pages/                     # Patient360, CopilotChat, Timeline, ClaimsAudit, HIESync
+│       │   ├── hooks/                     # usePatient360, useCopilot, useClaims, useTimeline
+│       │   ├── context/                   # LocaleContext (Bilingual RTL/LTR), PatientContext
+│       │   ├── services/                  # Typed API client with mock fallback
+│       │   └── components/templates/      # MainLayout with sovereign badges & navigation
+│       ├── package.json
+│       ├── vite.config.ts
+│       └── tailwind.config.js
 │
 ├── packages/
-│   ├── shared-types/                 # Shared TypeScript Data Contracts & FHIR DTOs
-│   ├── ui/                           # Shared Atomic Design System UI Library
-│   │   ├── src/atoms/                # Atoms (Button, Badge, CitationAnchorBadge, Input, Spinner, SeverityPill)
-│   │   ├── src/molecules/            # Molecules (VitalMetricCard, RouteBadgeGroup, LanguageSwitcher, ChatMessageBubble)
-│   │   ├── src/organisms/            # Organisms (Patient360Header, CopilotChatPanel, TriFoldRetrievalInspector, Timeline)
-│   │   └── src/hooks/                # UI Hooks (useRTL, useCitationModal)
-│   ├── typescript-config/            # Shared Base & React TSConfigs
-│   └── docs/                         # System HLD, LLD, DFD, Sequence & Ingestion Specs
+│   ├── shared-types/                      # Shared TypeScript data contracts
+│   ├── ui/                                # Shared Atomic Design System UI Library
+│   │   ├── src/atoms/                     # Button, Badge, CitationAnchorBadge, Input, Spinner, SeverityPill
+│   │   ├── src/molecules/                 # VitalMetricCard, RouteBadgeGroup, LanguageSwitcher, ChatMessageBubble
+│   │   ├── src/organisms/                 # Patient360Header, CopilotChatPanel, TriFoldInspector, Timeline
+│   │   └── src/hooks/                     # useRTL, useCitationModal
+│   └── typescript-config/                 # Shared compiler configs
+│
+├── .editorconfig                          # Uniform spacing & indentation across IDEs
+├── .gitignore                             # Root exclusion rules
+├── .env.example                           # Clean dummy environment template
+├── AGENTS.md                              # Unified AI assistant coding conventions
+├── GEMINI.md                              # Direct context file for LLM agents
+├── README.md                              # Executive overview & quickstart
+└── turbo.json                             # Turborepo task pipelines
+
 ```
 
 ---
 
-## 🔬 Frontend & Backend Atomic Mapping
+## 🎨 Official Hospyar Enterprise Healthcare Palette
 
-| Atomic Layer | Frontend (`packages/ui` & `apps/web`) | Backend (`apps/backend/app`) |
-| :--- | :--- | :--- |
-| **Atoms** | `Button`, `Badge`, `CitationAnchorBadge`, `Input`, `Spinner`, `SeverityPill` | `types.py` (Pydantic DTOs), `enums.py`, `config.py`, `errors.py`, `security.py` |
-| **Molecules** | `VitalMetricCard`, `RouteBadgeGroup`, `LanguageSwitcher`, `ClaimStatusBadge`, `ChatMessageBubble` | `vector_embedder.py`, `bm25_ranker.py`, `graph_traverser.py`, `fhir_validator.py`, `snowflake_client.py` |
-| **Organisms** | `Patient360Header`, `CopilotChatPanel`, `TriFoldRetrievalInspector`, `LongitudinalTimeline`, `ClaimsScrubberTable` | `hybrid_rag_router.py`, `cortex_orchestrator.py`, `temporal_aligner.py`, `claims_scrubber.py`, `audit_logger.py` |
-| **Pages** | `Patient360Page`, `CopilotChatPage`, `LongitudinalTimelinePage`, `ClaimsAuditPage`, `HIESyncPage` | `patient360_routes.py`, `copilot_routes.py`, `claims_routes.py`, `timeline_routes.py`, `hie_routes.py` |
-| **Hooks** | `useRTL`, `useCitationModal`, `usePatient360`, `useCopilot`, `useClaims` | `use_auth.py` (RBAC), `use_db.py`, `use_audit.py`, `use_locale.py` |
+| Role                   | Color Name       | Hex Code  | Purpose in Hospyar UI                                                               |
+| :--------------------- | :--------------- | :-------- | :---------------------------------------------------------------------------------- |
+| **Primary Base**       | Pure White       | `#FFFFFF` | Main application background, card bodies, patient charts, and clean clinical canvas |
+| **Brand & Text**       | Deep Teal Navy   | `#0B2E33` | Primary headings, top navigation bar, active sidebar links, and high-contrast text  |
+| **Primary Actions**    | Slate Teal       | `#4F7C82` | Action buttons (Book Appointment, Save, Submit), selected tabs, and key icons       |
+| **Cool Accent**        | Icy / Slate Blue | `#6B8B99` | Secondary buttons, patient tag outlines, and table header accents                   |
+| **Borders & Dividers** | Muted Aqua Grey  | `#93B1B5` | Subtle container borders, card outlines, table gridlines, and disabled states       |
+| **Soft Surface Fill**  | Soft Powder Blue | `#B8E3E9` | Highlighted rows, hover backgrounds, badge chips, and alert containers              |
+
+---
+
+## 🔬 Architectural Layer Mapping
+
+### Frontend: Atomic Design (`packages/ui` & `apps/web`)
+
+- **Atoms (`packages/ui/src/atoms`)**: `Button`, `Badge`, `CitationAnchorBadge`, `Input`, `Spinner`, `SeverityPill`
+- **Molecules (`packages/ui/src/molecules`)**: `VitalMetricCard`, `RouteBadgeGroup`, `LanguageSwitcher`, `ClaimStatusBadge`, `ChatMessageBubble`, `FHIRPointerLink`
+- **Organisms (`packages/ui/src/organisms`)**: `Patient360Header`, `CopilotChatPanel`, `TriFoldRetrievalInspector`, `LongitudinalTimeline`, `ClaimsScrubberTable`, `EvidenceCitationDrawer`
+- **Pages (`apps/web/src/pages`)**: `Patient360Page`, `CopilotChatPage`, `LongitudinalTimelinePage`, `ClaimsAuditPage`, `HIESyncPage`
+- **Templates (`apps/web/src/components/templates`)**: `MainLayout` with Deep Teal Navy sovereign bar and bilingual LTR/RTL support
+
+### Backend: Clean Architecture (`apps/backend/app`)
+
+- **Core (`app/core/`)**: Application settings (`config.py`), custom exceptions (`errors.py`), security primitives (`security.py`), audit trails (`audit_logger.py`)
+- **Domain (`app/domain/`)**: Pure business models (`PatientProfile`, `VitalObservation`, `ClaimAuditRecord`, `CitationAnchor`) and enums (`RouteEnum`, `UserRole`, `HIESystem`)
+- **Use Cases (`app/use_cases/`)**: Workflows for `HybridRAGRouterUseCase`, `CortexOrchestratorUseCase`, `TemporalAlignerUseCase`, `ClaimsScrubberUseCase`
+- **Services (`app/services/`)**: Adapters for `VectorEmbedderService`, `BM25RankerService`, `GraphTraverserService`, `FHIRValidatorService`, `SnowflakeClientService`, `DLQQuarantineService`
+- **Delivery (`app/delivery/`)**: FastAPI `routes/` (`patient360_routes.py`, `copilot_routes.py`, etc.), Pydantic `dto/`, and request `dependencies/` (`auth.py`, `db.py`, `audit.py`, `locale.py`)
 
 ---
 
 ## 🚀 Quickstart & Commands
 
 ### 1. Install Workspace Dependencies
+
 ```bash
 pnpm install
 ```
 
 ### 2. Build All Packages & Applications
+
 ```bash
 pnpm run build
 ```
 
 ### 3. Run Automated Tests
+
 ```bash
 pnpm run test
 ```
 
 ### 4. Start Development Servers
+
 ```bash
 # Starts both frontend (port 3000) and backend (port 8000)
 pnpm run dev
 ```
 
-* **Web Application UI:** `http://localhost:3000`
-* **FastAPI Interactive Docs:** `http://localhost:8000/docs`
-* **Sovereign Health Check:** `http://localhost:8000/health`
+- **Web Application UI:** `http://localhost:3000`
+- **FastAPI Interactive Docs:** `http://localhost:8000/docs`
+- **Sovereign Health Check:** `http://localhost:8000/health`
 
 ---
 
-## 🛡️ GCC Sovereignty & Key Features
+## 🛡️ GCC Sovereignty & Key Principles
 
-* **Deterministic Tri-Fold Hybrid Retrieval**: Seamless routing across **VectorRAG** (narrative notes), **GraphRAG** (SNOMED CT / LOINC ontology graph), and **Text2SQL** (deterministic exact numbers and totals).
-* **Verbatim Citation Anchors**: Every AI assertion contains interactive inline proof tags e.g. `[CIT-001]` linked to exact FHIR paths (`Observation/obs-89104#valueQuantity`) or document spans (`Discharge_Summary/note-22104#span_120-145`).
-* **Bilingual Arabic & English with Native RTL**: Dynamic direction switching and typography optimized for GCC users.
-* **Regional HIE Gateways**: Native alignment with Saudi NPHIES, Abu Dhabi Malaffi, Dubai NABIDH, and UAE Riayati.
+1. **Zero Cross-Border Data Egress**: All clinical records, vector embeddings, and LLM inference calls remain strictly inside sovereign in-country cloud regions (`UAE-CENTRAL-1` or `KSA-CENTRAL-1`).
+2. **Deterministic Tri-Fold Hybrid Retrieval (HybridRAG)**:
+   - **VectorRAG**: Dense semantic search (`bge-large-en` 768-dim) + lexical BM25 over clinical note chunks.
+   - **GraphRAG**: NetworkX traversal of SNOMED CT and LOINC concept ontologies to prevent semantic drift.
+   - **Text2SQL**: Relational queries on Snowflake/PostgreSQL for exact numeric metrics, lab trends, and financial totals.
+3. **Verbatim Citation Anchors**: Every assertion is bound to immutable, verifiable citation anchors `[CIT-xxx]` resolving directly to FHIR resources (`Observation/obs-89104#valueQuantity`, `Discharge_Summary/note-22104#span_120-145`, etc.).
+4. **Bilingual Arabic & English**: Native RTL/LTR switching and Arabic typography tailored for GCC clinicians and administrators.
+5. **Regional HIE Gateways**: Compliant integration with Saudi NPHIES, Abu Dhabi Malaffi, Dubai NABIDH, and UAE Federal Riayati.

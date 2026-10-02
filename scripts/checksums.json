@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "algorithm": "SHA-256",
-  "generated_at": "2026-09-26T14:50:39.908Z",
+  "generated_at": "2026-10-02T12:11:43.488Z",
   "governance": "UAE PDPL & KSA PDPL Sovereign Verification",
   "files": {
     "package.json": "7298ec15a37bf80819642c2c260e5d6b5e42fb1599d2290f764a8a73bf0111ec",
@@ -14,7 +14,7 @@
     "apps/web/public/images/1.png": "5f385c9995b67a7293dd76a0c1e060f99b7ad49d48cbd51df15a4b32c42c882e",
     "apps/web/public/images/4.png": "7a1c192e99f60a6707df77c60134843da1435bb58646317c8228381e1f9ca02a",
     "apps/backend/requirements.txt": "3bc6b0bae8c1da0fd5d0889854a62876d86c3bc5c541cea57ee5d634c982948c",
-    "apps/backend/app/core/config.py": "d73053d303e8786491bc6b64e75abef12adeab7662210aca520adb5756d0b575",
+    "apps/backend/app/core/config.py": "7add059ea1b03a812e0bc80e1bbd5a17495543cedde1b6bc6ef1c18f13857b30",
     "apps/backend/app/core/security.py": "fb463bf9eb09e7558f91b82013b5fe2d68ca3e43aa5117e4b63bb5de1a1daa1f",
     "packages/shared-types/package.json": "7309a5b168650dfd39a20e67625f03e1f8da34326eda90ccdcc204cf5e17d194",
     "packages/shared-types/src/index.ts": "77626a5ac14aa7ab09bc833c6b9c47a823bef4d5652aaa81221930f293e5fa27",

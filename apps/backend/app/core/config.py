@@ -19,7 +19,7 @@ class Settings(BaseModel):
     SNOWFLAKE_ROLE: str = os.getenv("SNOWFLAKE_ROLE", "HOSPYAR_CLINICAL_ROLE")
     
     # Cortex AI LLM
-    CORTEX_MODEL: str = os.getenv("CORTEX_MODEL", "llama3-70b")
+    CORTEX_MODEL: str = os.getenv("CORTEX_MODEL", "llama3.3-70b")
     
     # Security & Audit
     JWT_SECRET_KEY: str = os.getenv("JWT_SECRET_KEY", "hospyar-sovereign-secret-2026-uae-ksa")

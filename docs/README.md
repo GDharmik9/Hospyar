@@ -24,6 +24,7 @@ docs/
 └── runbooks/              # Developer & Ops Runbooks
     ├── local_setup.md                           # Local environment bootstrapping, testing, & debugging
     ├── snowflake_setup.md                       # Snowflake RBAC, DDL, Cortex AI, and .env setup guide
+    ├── deployment_and_hosting.md                # Live hosting plan, Vercel/Render guides, & submission URLs
     └── branch_protection.md                     # GitHub Branch Protection, Husky gates & Checksum guide
 ```
 

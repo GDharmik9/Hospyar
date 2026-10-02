@@ -40,7 +40,8 @@ def query_copilot(
         evidence_catalog=citation_catalog,
         active_routes=active_routes,
         evidence_items=evidence_items,
-        locale=payload.locale
+        locale=payload.locale,
+        db=db
     )
 
     # Cryptographic append-only audit event

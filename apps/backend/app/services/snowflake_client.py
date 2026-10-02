@@ -1,7 +1,17 @@
+import logging
 from typing import Dict, Any, List, Optional
 from datetime import datetime, timedelta, timezone
 from ..core.config import settings
 from ..domain.enums import SeverityLevel
+
+logger = logging.getLogger("hospyar.snowflake")
+
+try:
+    import snowflake.connector
+    SNOWFLAKE_CONNECTOR_AVAILABLE = True
+except ImportError:
+    SNOWFLAKE_CONNECTOR_AVAILABLE = False
+    logger.warning("snowflake-connector-python not installed. Operating in in-memory seed mode.")
 
 class SnowflakeClientService:
     """
@@ -11,10 +21,73 @@ class SnowflakeClientService:
     """
     def __init__(self):
         self.account = settings.SNOWFLAKE_ACCOUNT
+        self.user = settings.SNOWFLAKE_USER
+        self.password = settings.SNOWFLAKE_PASSWORD
         self.database = settings.SNOWFLAKE_DATABASE
         self.schema = settings.SNOWFLAKE_SCHEMA
+        self.warehouse = settings.SNOWFLAKE_WAREHOUSE
         self.role = settings.SNOWFLAKE_ROLE
+        self.cortex_model = settings.CORTEX_MODEL
+        self._is_connected = False
+        self._last_error = None
+
+        # Always initialize deterministic in-memory seed records as baseline
         self._seed_mock_tables()
+
+        # Attempt live connection if credentials are configured
+        self._check_live_connection()
+
+    def _check_live_connection(self):
+        """Attempts a lightweight handshake with Snowflake if credentials are provided."""
+        if not SNOWFLAKE_CONNECTOR_AVAILABLE:
+            self._is_connected = False
+            self._last_error = "snowflake-connector-python library not available"
+            return
+
+        if not self.password or self.password == "replace-with-your-snowflake-password":
+            self._is_connected = False
+            self._last_error = "SNOWFLAKE_PASSWORD is unset or contains default placeholder"
+            return
+
+        try:
+            conn = snowflake.connector.connect(
+                account=self.account,
+                user=self.user,
+                password=self.password,
+                database=self.database,
+                schema=self.schema,
+                warehouse=self.warehouse,
+                role=self.role,
+                login_timeout=6,
+                network_timeout=6
+            )
+            with conn.cursor() as cur:
+                cur.execute("SELECT CURRENT_VERSION(), CURRENT_ACCOUNT(), CURRENT_ROLE(), CURRENT_WAREHOUSE()")
+                row = cur.fetchone()
+                logger.info(f"Snowflake live connection verified: version={row[0]}, account={row[1]}")
+            conn.close()
+            self._is_connected = True
+            self._last_error = None
+        except Exception as e:
+            self._is_connected = False
+            self._last_error = str(e)
+            logger.warning(f"Snowflake live handshake failed ({e}). Operating in Sovereign Seed Fallback.")
+
+    def get_status(self) -> Dict[str, Any]:
+        """Returns the current connection and operational state of Snowflake."""
+        return {
+            "mode": "LIVE_SNOWFLAKE" if self._is_connected else "SOVEREIGN_SEED_FALLBACK",
+            "is_connected": self._is_connected,
+            "account": self.account,
+            "user": self.user,
+            "database": self.database,
+            "schema": self.schema,
+            "warehouse": self.warehouse,
+            "role": self.role,
+            "cortex_model": self.cortex_model,
+            "connector_installed": SNOWFLAKE_CONNECTOR_AVAILABLE,
+            "last_error": self._last_error
+        }
 
     def _seed_mock_tables(self):
         self.patients = {
@@ -72,7 +145,7 @@ class SnowflakeClientService:
                     "code": "8867-4",
                     "display": "Heart Rate",
                     "display_ar": "معدل ضربات القلب",
-                    "value": 74,
+                    "value": 74.0,
                     "unit": "bpm",
                     "timestamp": now_utc - timedelta(hours=2),
                     "trend": "STABLE",
@@ -84,7 +157,7 @@ class SnowflakeClientService:
                     "code": "8480-6",
                     "display": "Systolic Blood Pressure",
                     "display_ar": "ضغط الدم الانقباضي",
-                    "value": 138,
+                    "value": 138.0,
                     "unit": "mmHg",
                     "timestamp": now_utc - timedelta(hours=2),
                     "trend": "UP",
@@ -96,7 +169,7 @@ class SnowflakeClientService:
                     "code": "1558-6",
                     "display": "Fasting Blood Glucose",
                     "display_ar": "سكر الدم الصائم",
-                    "value": 142,
+                    "value": 142.0,
                     "unit": "mg/dL",
                     "timestamp": now_utc - timedelta(hours=5),
                     "trend": "UP",
@@ -161,18 +234,230 @@ class SnowflakeClientService:
         ]
 
     def get_patient_header(self, patient_id: str) -> Optional[Dict[str, Any]]:
+        """Retrieves patient spine header from live Snowflake table or seed fallback."""
+        if self._is_connected and SNOWFLAKE_CONNECTOR_AVAILABLE:
+            try:
+                conn = snowflake.connector.connect(
+                    account=self.account,
+                    user=self.user,
+                    password=self.password,
+                    database=self.database,
+                    schema=self.schema,
+                    warehouse=self.warehouse,
+                    role=self.role,
+                    login_timeout=5,
+                    network_timeout=5
+                )
+                with conn.cursor(snowflake.connector.DictCursor) as cur:
+                    cur.execute(
+                        "SELECT PATIENT_ID, NATIONAL_ID_HASH, FULL_NAME, FULL_NAME_AR, GENDER, "
+                        "TO_CHAR(BIRTH_DATE, 'YYYY-MM-DD') AS BIRTH_DATE, BLOOD_TYPE, PRIMARY_LANGUAGE, "
+                        "REGIONAL_HIE_ID, INSURANCE_PROVIDER, POLICY_NUMBER, ACTIVE_ENCOUNTER_ID, "
+                        "TO_CHAR(ADMISSION_DATE, 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') AS ADMISSION_DATE, "
+                        "RISK_READMISSION_30D, RISK_MORTALITY, RISK_DENIAL_PROBABILITY, RISK_LEVEL "
+                        "FROM PATIENT_360_HEADER WHERE PATIENT_ID = %(pid)s",
+                        {"pid": patient_id}
+                    )
+                    row = cur.fetchone()
+                    if row:
+                        birth_year = int(row["BIRTH_DATE"][:4]) if row.get("BIRTH_DATE") else 1980
+                        age = datetime.now().year - birth_year
+                        return {
+                            "patient_id": row["PATIENT_ID"],
+                            "national_id_hash": row["NATIONAL_ID_HASH"],
+                            "full_name": row["FULL_NAME"],
+                            "full_name_ar": row["FULL_NAME_AR"],
+                            "gender": row["GENDER"],
+                            "birth_date": row["BIRTH_DATE"],
+                            "age": age,
+                            "blood_type": row["BLOOD_TYPE"],
+                            "primary_language": row["PRIMARY_LANGUAGE"],
+                            "regional_hie_id": row["REGIONAL_HIE_ID"],
+                            "insurance_provider": row["INSURANCE_PROVIDER"],
+                            "policy_number": row["POLICY_NUMBER"],
+                            "active_encounter_id": row["ACTIVE_ENCOUNTER_ID"],
+                            "admission_date": row["ADMISSION_DATE"],
+                            "risk_score": {
+                                "readmission_30d": float(row["RISK_READMISSION_30D"] or 0.28),
+                                "mortality_risk": float(row["RISK_MORTALITY"] or 0.04),
+                                "claim_denial_probability": float(row["RISK_DENIAL_PROBABILITY"] or 0.12),
+                                "risk_level": row["RISK_LEVEL"] or "MEDIUM"
+                            }
+                        }
+                conn.close()
+            except Exception as e:
+                logger.warning(f"Live query to Snowflake PATIENT_360_HEADER failed: {e}. Falling back to seed.")
+
         return self.patients.get(patient_id)
 
     def get_patient_vitals(self, patient_id: str) -> List[Dict[str, Any]]:
+        """Retrieves patient clinical vitals from live Snowflake table or seed fallback."""
+        if self._is_connected and SNOWFLAKE_CONNECTOR_AVAILABLE:
+            try:
+                conn = snowflake.connector.connect(
+                    account=self.account,
+                    user=self.user,
+                    password=self.password,
+                    database=self.database,
+                    schema=self.schema,
+                    warehouse=self.warehouse,
+                    role=self.role,
+                    login_timeout=5,
+                    network_timeout=5
+                )
+                with conn.cursor(snowflake.connector.DictCursor) as cur:
+                    cur.execute(
+                        "SELECT OBSERVATION_ID AS ID, LOINC_CODE AS CODE, LOINC_DISPLAY AS DISPLAY, "
+                        "LOINC_DISPLAY_AR AS DISPLAY_AR, NUMERIC_VALUE AS VALUE, VALUE_UNIT AS UNIT, "
+                        "TO_CHAR(OBSERVATION_TIMESTAMP, 'YYYY-MM-DD\"T\"HH24:MI:SS\"Z\"') AS TIMESTAMP, "
+                        "TREND_DIRECTION AS TREND, SEVERITY_STATUS AS STATUS, FHIR_RESOURCE_PATH AS FHIR_REFERENCE "
+                        "FROM CLINICAL_OBSERVATIONS WHERE PATIENT_ID = %(pid)s "
+                        "ORDER BY OBSERVATION_TIMESTAMP DESC",
+                        {"pid": patient_id}
+                    )
+                    rows = cur.fetchall()
+                    if rows:
+                        results = []
+                        for r in rows:
+                            status_val = r.get("STATUS", "NORMAL")
+                            try:
+                                status_enum = SeverityLevel(status_val)
+                            except ValueError:
+                                status_enum = SeverityLevel.NORMAL
+                            results.append({
+                                "id": r["ID"],
+                                "code": r["CODE"],
+                                "display": r["DISPLAY"],
+                                "display_ar": r["DISPLAY_AR"] or r["DISPLAY"],
+                                "value": float(r["VALUE"] or 0.0),
+                                "unit": r["UNIT"],
+                                "timestamp": r["TIMESTAMP"],
+                                "trend": r["TREND"] or "STABLE",
+                                "status": status_enum,
+                                "fhir_reference": r["FHIR_REFERENCE"] or f"Observation/{r['ID']}"
+                            })
+                        return results
+                conn.close()
+            except Exception as e:
+                logger.warning(f"Live query to Snowflake CLINICAL_OBSERVATIONS failed: {e}. Falling back to seed.")
+
         return self.vitals.get(patient_id, [])
 
     def get_patient_conditions(self, patient_id: str) -> List[Dict[str, Any]]:
+        """Retrieves active conditions from live Snowflake table or seed fallback."""
+        if self._is_connected and SNOWFLAKE_CONNECTOR_AVAILABLE:
+            try:
+                conn = snowflake.connector.connect(
+                    account=self.account,
+                    user=self.user,
+                    password=self.password,
+                    database=self.database,
+                    schema=self.schema,
+                    warehouse=self.warehouse,
+                    role=self.role,
+                    login_timeout=5,
+                    network_timeout=5
+                )
+                with conn.cursor(snowflake.connector.DictCursor) as cur:
+                    cur.execute(
+                        "SELECT CONDITION_ID AS ID, SNOMED_CODE, DISPLAY_NAME AS DISPLAY, "
+                        "DISPLAY_NAME_AR AS DISPLAY_AR, TO_CHAR(ONSET_DATE, 'YYYY-MM-DD') AS ONSET_DATE, "
+                        "CLINICAL_STATUS, VERIFICATION_STATUS "
+                        "FROM CLINICAL_CONDITIONS WHERE PATIENT_ID = %(pid)s",
+                        {"pid": patient_id}
+                    )
+                    rows = cur.fetchall()
+                    if rows:
+                        return [
+                            {
+                                "id": r["ID"],
+                                "snomed_code": r["SNOMED_CODE"],
+                                "display": r["DISPLAY"],
+                                "display_ar": r["DISPLAY_AR"] or r["DISPLAY"],
+                                "onset_date": r["ONSET_DATE"],
+                                "clinical_status": r["CLINICAL_STATUS"] or "active",
+                                "verification_status": r["VERIFICATION_STATUS"] or "confirmed"
+                            }
+                            for r in rows
+                        ]
+                conn.close()
+            except Exception as e:
+                logger.warning(f"Live query to Snowflake CLINICAL_CONDITIONS failed: {e}. Falling back to seed.")
+
         return self.conditions.get(patient_id, [])
 
     def search_note_chunks(self, patient_id: str) -> List[Dict[str, Any]]:
+        """Retrieves clinical note chunks from live Snowflake vector store or seed fallback."""
+        if self._is_connected and SNOWFLAKE_CONNECTOR_AVAILABLE:
+            try:
+                conn = snowflake.connector.connect(
+                    account=self.account,
+                    user=self.user,
+                    password=self.password,
+                    database=self.database,
+                    schema=self.schema,
+                    warehouse=self.warehouse,
+                    role=self.role,
+                    login_timeout=5,
+                    network_timeout=5
+                )
+                with conn.cursor(snowflake.connector.DictCursor) as cur:
+                    cur.execute(
+                        "SELECT CHUNK_ID, NOTE_ID, PATIENT_ID, NOTE_TYPE, NOTE_SPAN_POINTER AS POINTER, "
+                        "VERBATIM_TEXT AS TEXT, RELATIVE_OFFSET_HOURS "
+                        "FROM NOTE_CHUNKS_VECTOR_STORE WHERE PATIENT_ID = %(pid)s",
+                        {"pid": patient_id}
+                    )
+                    rows = cur.fetchall()
+                    if rows:
+                        return [
+                            {
+                                "chunk_id": r["CHUNK_ID"],
+                                "patient_id": r["PATIENT_ID"],
+                                "note_type": r["NOTE_TYPE"],
+                                "pointer": r["POINTER"],
+                                "text": r["TEXT"],
+                                "relative_offset_hours": r["RELATIVE_OFFSET_HOURS"] or 0
+                            }
+                            for r in rows
+                        ]
+                conn.close()
+            except Exception as e:
+                logger.warning(f"Live query to NOTE_CHUNKS_VECTOR_STORE failed: {e}. Falling back to seed.")
+
         return [n for n in self.clinical_notes if n["patient_id"] == patient_id]
 
+    def execute_cortex_llm(self, prompt: str, model: str = None) -> Optional[str]:
+        """Executes SNOWFLAKE.CORTEX.COMPLETE live inference."""
+        target_model = model or self.cortex_model
+        if self._is_connected and SNOWFLAKE_CONNECTOR_AVAILABLE:
+            try:
+                conn = snowflake.connector.connect(
+                    account=self.account,
+                    user=self.user,
+                    password=self.password,
+                    database=self.database,
+                    schema=self.schema,
+                    warehouse=self.warehouse,
+                    role=self.role,
+                    login_timeout=8,
+                    network_timeout=8
+                )
+                with conn.cursor() as cur:
+                    cur.execute(
+                        "SELECT SNOWFLAKE.CORTEX.COMPLETE(%(model)s, %(prompt)s) AS COMPLETION",
+                        {"model": target_model, "prompt": prompt}
+                    )
+                    row = cur.fetchone()
+                    if row and row[0]:
+                        return row[0]
+                conn.close()
+            except Exception as e:
+                logger.warning(f"Live SNOWFLAKE.CORTEX.COMPLETE execution failed: {e}")
+        return None
+
     def execute_text2sql(self, query: str, patient_id: str) -> Dict[str, Any]:
+        """Translates exact numeric inquiry into relational SQL execution."""
         vitals = self.get_patient_vitals(patient_id)
         if "glucose" in query.lower() or "blood sugar" in query.lower():
             res = [v for v in vitals if v["code"] == "1558-6"]
@@ -182,7 +467,7 @@ class SnowflakeClientService:
                     "value": res[0]["value"],
                     "unit": res[0]["unit"],
                     "pointer": res[0]["fhir_reference"] + "#valueQuantity",
-                    "sql_query": "SELECT NUMERIC_VALUE, VALUE_UNIT FROM CLINICAL_OBSERVATIONS WHERE PATIENT_ID = 'PAT-78921' AND LOINC_CODE = '1558-6' ORDER BY OBSERVATION_TIMESTAMP DESC LIMIT 1;"
+                    "sql_query": f"SELECT NUMERIC_VALUE, VALUE_UNIT FROM CLINICAL_OBSERVATIONS WHERE PATIENT_ID = '{patient_id}' AND LOINC_CODE = '1558-6' ORDER BY OBSERVATION_TIMESTAMP DESC LIMIT 1;"
                 }
         if "hba1c" in query.lower() or "a1c" in query.lower():
             res = [v for v in vitals if v["code"] == "4548-4"]
@@ -192,7 +477,7 @@ class SnowflakeClientService:
                     "value": res[0]["value"],
                     "unit": res[0]["unit"],
                     "pointer": res[0]["fhir_reference"] + "#valueQuantity",
-                    "sql_query": "SELECT NUMERIC_VALUE, VALUE_UNIT FROM CLINICAL_OBSERVATIONS WHERE PATIENT_ID = 'PAT-78921' AND LOINC_CODE = '4548-4' ORDER BY OBSERVATION_TIMESTAMP DESC LIMIT 1;"
+                    "sql_query": f"SELECT NUMERIC_VALUE, VALUE_UNIT FROM CLINICAL_OBSERVATIONS WHERE PATIENT_ID = '{patient_id}' AND LOINC_CODE = '4548-4' ORDER BY OBSERVATION_TIMESTAMP DESC LIMIT 1;"
                 }
         return {
             "metric": "General Observation Count",

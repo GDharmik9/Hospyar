@@ -13,6 +13,8 @@ class Settings(BaseModel):
     
     # Snowflake CoCo CLI & Governed Perimeter
     SNOWFLAKE_ACCOUNT: str = os.getenv("SNOWFLAKE_ACCOUNT", "HOSPYAR_GCC_PROD")
+    SNOWFLAKE_USER: str = os.getenv("SNOWFLAKE_USER", "GDHARMIK9")
+    SNOWFLAKE_PASSWORD: str = os.getenv("SNOWFLAKE_PASSWORD", "")
     SNOWFLAKE_DATABASE: str = os.getenv("SNOWFLAKE_DATABASE", "HOSPYAR_PATIENT360_DB")
     SNOWFLAKE_SCHEMA: str = os.getenv("SNOWFLAKE_SCHEMA", "PUBLIC")
     SNOWFLAKE_WAREHOUSE: str = os.getenv("SNOWFLAKE_WAREHOUSE", "HOSPYAR_CLINICAL_WH")

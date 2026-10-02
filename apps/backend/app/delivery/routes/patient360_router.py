@@ -6,6 +6,11 @@ from ...services.snowflake_client import SnowflakeClientService
 
 router = APIRouter(prefix="/api/v1/patient360", tags=["Patient 360 Spine"])
 
+@router.get("/snowflake/status", tags=["Snowflake Integration"])
+def get_snowflake_status(db: SnowflakeClientService = Depends(get_snowflake_client)):
+    """Returns real-time connection status to Snowflake Data Cloud."""
+    return db.get_status()
+
 @router.get("/{patient_id}", response_model=Patient360HeaderDTO)
 def get_patient_360(
     patient_id: str,

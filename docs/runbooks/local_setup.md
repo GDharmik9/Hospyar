@@ -157,7 +157,7 @@ pnpm run dev
 
 | Service                      | URL                                                          | Description                                               |
 | ---------------------------- | ------------------------------------------------------------ | --------------------------------------------------------- |
-| **Patient 360 Web UI**       | [http://localhost:3000](http://localhost:3000)               | React 19 UI (Patient 360, Copilot Chat, Timeline, Claims) |
+| **Patient 360 Web UI**       | [http://localhost:5173](http://localhost:5173)               | React 19 UI (Patient 360, Copilot Chat, Timeline, Claims) |
 | **FastAPI Interactive Docs** | [http://localhost:8000/docs](http://localhost:8000/docs)     | Swagger OpenAPI UI for testing REST endpoints             |
 | **Alternative API Docs**     | [http://localhost:8000/redoc](http://localhost:8000/redoc)   | ReDoc interface                                           |
 | **Sovereign Health Check**   | [http://localhost:8000/health](http://localhost:8000/health) | Verifies sovereign zone & operational status              |

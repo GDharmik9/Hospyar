@@ -184,11 +184,11 @@ pnpm run build
 ### 4. Start Local Development Servers
 
 ```bash
-# Launches both the React 19 Web UI (port 3000) and FastAPI API (port 8000)
+# Launches both the React 19 Web UI (port 5173) and FastAPI API (port 8000)
 pnpm run dev
 ```
 
-- 🌐 **Patient 360 Web UI:** [http://localhost:3000](http://localhost:3000)
+- 🌐 **Patient 360 Web UI:** [http://localhost:5173](http://localhost:5173)
 - 📖 **FastAPI Swagger Docs:** [http://localhost:8000/docs](http://localhost:8000/docs)
 - 🩺 **Sovereign Health Check:** [http://localhost:8000/health](http://localhost:8000/health)
 
@@ -204,6 +204,8 @@ Hospyar automatically enforces quality gates on git operations:
 For advanced troubleshooting and branch protection configuration, refer to:
 
 - 📘 [Local Setup & Operations Runbook](docs/runbooks/local_setup.md)
+- ❄️ [Snowflake & Cortex AI Setup Runbook](docs/runbooks/snowflake_setup.md)
+- 🚀 [Live Hosting & Deployment Runbook](docs/runbooks/deployment_and_hosting.md)
 - 🛡️ [GitHub Branch Protection Runbook](docs/runbooks/branch_protection.md)
 
 ## 🛡️ GCC Sovereignty & Key Principles

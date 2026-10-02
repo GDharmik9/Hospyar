@@ -1,0 +1,38 @@
+# Multi-stage Dockerfile for Hospyar on Snowflake Snowpark Container Services (SPCS)
+# Produces a single unified image hosting both FastAPI and React Web UI
+
+# Stage 1: Build the React 19 Frontend
+FROM node:20-slim AS frontend-builder
+WORKDIR /build
+RUN npm install -g pnpm
+
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml turbo.json ./
+COPY packages ./packages
+COPY apps/web ./apps/web
+
+RUN pnpm install --frozen-lockfile
+RUN pnpm --filter @hospyar/web build
+
+# Stage 2: Production Python Sovereign Runtime (FastAPI + Static SPA)
+FROM python:3.12-slim
+WORKDIR /app
+
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV STATIC_DIR=/app/static
+ENV SOVEREIGN_REGION=UAE-CENTRAL-1
+ENV REGULATORY_REGIME=UAE_PDPL_ADHICS
+
+# Install backend dependencies
+COPY apps/backend/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy FastAPI application
+COPY apps/backend/app ./app
+
+# Copy built static frontend from builder stage
+COPY --from=frontend-builder /build/apps/web/dist /app/static
+
+EXPOSE 8000
+
+CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

@@ -205,7 +205,8 @@ For advanced troubleshooting and branch protection configuration, refer to:
 
 - 📘 [Local Setup & Operations Runbook](docs/runbooks/local_setup.md)
 - ❄️ [Snowflake & Cortex AI Setup Runbook](docs/runbooks/snowflake_setup.md)
-- 🚀 [Live Hosting & Deployment Runbook](docs/runbooks/deployment_and_hosting.md)
+- ☁️ [Hosting Directly on Snowflake (SPCS & Streamlit)](docs/runbooks/hosting_on_snowflake.md)
+- 🚀 [Multi-Cloud Hosting & Deployment Runbook](docs/runbooks/deployment_and_hosting.md)
 - 🛡️ [GitHub Branch Protection Runbook](docs/runbooks/branch_protection.md)
 
 ## 🛡️ GCC Sovereignty & Key Principles

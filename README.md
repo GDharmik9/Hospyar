@@ -3,6 +3,12 @@
 > **Enterprise Patient & Member 360 Platform for GCC Healthcare Governance**  
 > Grounded in **UAE PDPL (Federal Decree-Law No. 45)**, **Saudi Arabia PDPL**, and regional HIE standards (NPHIES, Malaffi, NABIDH, Riayati) with zero cross-border data egress.
 
+### 🎥 Live Frontend Walkthrough & System Tour
+
+![Hospyar Frontend Walkthrough](docs/assets/walkthrough.webp)
+
+- 🌐 **Live Web Application:** [https://hospyar.vercel.app](https://hospyar.vercel.app)
+
 ---
 
 ## 🏛️ Monorepo Architecture Overview

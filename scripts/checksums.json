@@ -1,13 +1,13 @@
 {
   "version": "1.0.0",
   "algorithm": "SHA-256",
-  "generated_at": "2026-10-03T14:36:18.360Z",
+  "generated_at": "2026-10-03T14:45:03.611Z",
   "governance": "UAE PDPL & KSA PDPL Sovereign Verification",
   "files": {
     "package.json": "7298ec15a37bf80819642c2c260e5d6b5e42fb1599d2290f764a8a73bf0111ec",
     "pnpm-lock.yaml": "72dccd0ba146c36eee5dd31abaf05394b14191b1a0e5804518b6875b0e523841",
     "pnpm-workspace.yaml": "60ce4d1dbf137701a4683d171391c51662700c2f3e32a7caab8b2efc22540e65",
-    "turbo.json": "a647508b4891baf2706194703c804412386b3eeda69deac9d145f7690403f97a",
+    "turbo.json": "d4cf3a9eccedafd3c503a11d04ffbe76b0797649d9092ef2435ce9f5854fe5e5",
     "eslint.config.js": "4226807917cc08500647e67e8884d8db386abedead170e3268a45c2bc0bc87f6",
     "apps/web/package.json": "dafcbce9f86f440d7264697348d5c1199fc734ddb776a3510b73cf4af53a5a80",
     "apps/web/tailwind.config.js": "636f2730bfcfa31b90e6a9dbc7119ffa7e9a1f1b756961503d288c334d44dbbb",
@@ -16,8 +16,8 @@
     "apps/backend/requirements.txt": "97ab6b3c460f64ba154a6e2d90ac92cd7dd3e43b800b7035784c58077f637e42",
     "apps/backend/app/core/config.py": "799efa765095403ca10d5abb332aa10dd9a8b8f0ca4b70bbb691d2de0a9da593",
     "apps/backend/app/core/security.py": "fb463bf9eb09e7558f91b82013b5fe2d68ca3e43aa5117e4b63bb5de1a1daa1f",
-    "packages/shared-types/package.json": "7309a5b168650dfd39a20e67625f03e1f8da34326eda90ccdcc204cf5e17d194",
+    "packages/shared-types/package.json": "d45d6f4aa09c57fec7fcbad28341af92675c6f5cec3185723281a9c5d7813734",
     "packages/shared-types/src/index.ts": "77626a5ac14aa7ab09bc833c6b9c47a823bef4d5652aaa81221930f293e5fa27",
-    "packages/ui/package.json": "1f286592358743f839945ed757a23b840b0bc168f48cf51be0731b9b3f8e8cad"
+    "packages/ui/package.json": "16ba82e05097c0bd8afd0a1130ad4bd95a2d469ee64a86531931dc5295e3fddc"
   }
 }

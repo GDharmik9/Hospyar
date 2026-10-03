@@ -1,8 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "installCommand": "pnpm install --prod=false",
-  "buildCommand": "npx turbo run build --filter=@hospyar/web...",
+  "buildCommand": "pnpm --filter @hospyar/web exec vite build",
   "outputDirectory": "apps/web/dist",
+
   "framework": "vite",
   "rewrites": [
     {

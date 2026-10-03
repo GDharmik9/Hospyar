@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "algorithm": "SHA-256",
-  "generated_at": "2026-10-02T16:53:24.783Z",
+  "generated_at": "2026-10-03T14:36:18.360Z",
   "governance": "UAE PDPL & KSA PDPL Sovereign Verification",
   "files": {
     "package.json": "7298ec15a37bf80819642c2c260e5d6b5e42fb1599d2290f764a8a73bf0111ec",
@@ -9,7 +9,7 @@
     "pnpm-workspace.yaml": "60ce4d1dbf137701a4683d171391c51662700c2f3e32a7caab8b2efc22540e65",
     "turbo.json": "a647508b4891baf2706194703c804412386b3eeda69deac9d145f7690403f97a",
     "eslint.config.js": "4226807917cc08500647e67e8884d8db386abedead170e3268a45c2bc0bc87f6",
-    "apps/web/package.json": "6eba1432599d76e880a3c1b487186ed6721e789cc1dc38e4852d9eca604892cf",
+    "apps/web/package.json": "dafcbce9f86f440d7264697348d5c1199fc734ddb776a3510b73cf4af53a5a80",
     "apps/web/tailwind.config.js": "636f2730bfcfa31b90e6a9dbc7119ffa7e9a1f1b756961503d288c334d44dbbb",
     "apps/web/public/images/1.png": "5f385c9995b67a7293dd76a0c1e060f99b7ad49d48cbd51df15a4b32c42c882e",
     "apps/web/public/images/4.png": "7a1c192e99f60a6707df77c60134843da1435bb58646317c8228381e1f9ca02a",

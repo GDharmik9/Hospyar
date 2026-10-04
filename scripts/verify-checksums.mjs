@@ -29,6 +29,18 @@ console.log(`🛡️  Verifying Hospyar Checksum Manifest (${manifest.algorithm}
 console.log(`   Manifest Generated: ${manifest.generated_at}`);
 console.log(`   Governance Standard: ${manifest.governance}\n`);
 
+const BINARY_EXTENSIONS = new Set(['.png', '.jpg', '.jpeg', '.gif', '.webp', '.ico', '.pdf', '.woff', '.woff2']);
+
+function getDeterministicBuffer(fullPath) {
+  const ext = path.extname(fullPath).toLowerCase();
+  const raw = fs.readFileSync(fullPath);
+  if (BINARY_EXTENSIONS.has(ext)) {
+    return raw;
+  }
+  // Normalize CRLF to LF so checksums are cross-platform identical on Windows, Linux, and macOS
+  return Buffer.from(raw.toString('utf-8').replace(/\r\n/g, '\n'), 'utf-8');
+}
+
 for (const [relPath, expectedHash] of Object.entries(manifest.files)) {
   const fullPath = path.join(rootDir, relPath);
   if (!fs.existsSync(fullPath)) {
@@ -37,8 +49,9 @@ for (const [relPath, expectedHash] of Object.entries(manifest.files)) {
     continue;
   }
 
-  const content = fs.readFileSync(fullPath);
+  const content = getDeterministicBuffer(fullPath);
   const actualHash = crypto.createHash('sha256').update(content).digest('hex');
+
 
   if (actualHash !== expectedHash) {
     console.error(`  ❌ TAMPERED/MODIFIED: ${relPath}`);

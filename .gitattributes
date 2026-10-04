@@ -1,0 +1,14 @@
+# Hospyar Git Attributes - Cross-Platform Deterministic Normalization
+# Automatically normalize all text files to LF across Windows, macOS, and Linux
+* text=auto eol=lf
+
+# Explicit binary files
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.woff binary
+*.woff2 binary
